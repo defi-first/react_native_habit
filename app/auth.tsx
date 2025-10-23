@@ -1,24 +1,27 @@
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 const AuthScreen = () => {
+  const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const theme = useTheme();
 
-  const handleAuth = () => {
+  const handleAuth = async () => {
     if (!email || !password) {
       setError("Please enter both email and password");
       return;
     }
-    if(password.length < 6) {
+    if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
     }
     setError(null);
+    router.replace("/(tabs)");
   };
 
   const handleSwitchMode = () => {
@@ -53,7 +56,11 @@ const AuthScreen = () => {
           value={password}
           onChangeText={setPassword}
         />
-        {error && <Text className="my-2" style={{ color: theme.colors.error }}>{error}</Text>}
+        {error && (
+          <Text className="my-2" style={{ color: theme.colors.error }}>
+            {error}
+          </Text>
+        )}
         <Button mode="contained" className="mt-2" onPress={handleAuth}>
           {isSignUp ? "Sign up" : "Sign in"}
         </Button>

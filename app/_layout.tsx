@@ -1,5 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
+import { PaperProvider } from "react-native-paper";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
 function RouteGuard({ children }: { children: React.ReactNode }) {
@@ -19,11 +21,15 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   return (
-    <RouteGuard>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
-      </Stack>
-    </RouteGuard>
+    <SafeAreaProvider>
+      <PaperProvider>
+        <RouteGuard>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="auth" options={{ headerShown: false }} />
+          </Stack>
+        </RouteGuard>
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
