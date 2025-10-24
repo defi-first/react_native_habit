@@ -1,12 +1,13 @@
 import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
 function RouteGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const isAuth = false;
+  const isAuth = true;
 
   useEffect(() => {
     if (!isAuth) {
@@ -21,15 +22,17 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <PaperProvider>
-        <RouteGuard>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="auth" options={{ headerShown: false }} />
-          </Stack>
-        </RouteGuard>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <PaperProvider>
+          <RouteGuard>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="auth" options={{ headerShown: false }} />
+            </Stack>
+          </RouteGuard>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
