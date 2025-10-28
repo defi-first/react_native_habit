@@ -1,38 +1,27 @@
-import { Habit } from "@/types";
-import { getData } from "@/utils";
-import { HABIT_LIST } from "@/utils/constant";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { ScrollView, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { Button, Surface, Text } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { deleteHabit, getHabit } from "@/store/habit/action";
+import { Habit } from "@/types";
 
 const Index = () => {
+  const { habitList } = useSelector((state: RootState) => state.habitReducer);
   const route = useRouter();
-  const [habit, setHabit] = useState<Habit[]>([]);
   const swipeableRefs = useRef<Record<string, Swipeable | null>>({});
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    fetchHabits();
+    dispatch(getHabit());
   }, []);
 
-  const fetchHabits = async () => {
-    try {
-      const response = (await getData(HABIT_LIST)) || [];
-      setHabit(response);
-      console.log({ response });
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const renderRightActions = () => (
     <View className="justify-center items-end flex-1 bg-[#4caf50] rounded-[18px] pr-4">
-      <MaterialCommunityIcons
-        name="check-circle-outline"
-        size={32}
-        color="#fff"
-      />
+      <MaterialCommunityIcons name="check-circle-outline" size={32} color="#fff" />
     </View>
   );
 
@@ -42,27 +31,20 @@ const Index = () => {
     </View>
   );
 
-  const handleDeleteHabit = async (created: string) => {
-    alert(123);
+  const handleDeleteHabit = async (item: Habit) => {
+    dispatch(deleteHabit(item));
   };
 
   return (
-    <ScrollView
-      className="flex-1 p-4 bg-[#f5f5f5]"
-      showsHorizontalScrollIndicator={false}
-    >
+    <ScrollView className="flex-1 p-4 bg-[#f5f5f5]" showsHorizontalScrollIndicator={false}>
       <View className="flex-row justify-between items-center mb-6">
         <Text variant="headlineSmall">Today&apos;s Habit</Text>
-        <Button
-          mode="text"
-          onPress={() => route.replace("/auth")}
-          icon="logout"
-        >
+        <Button mode="text" onPress={() => route.replace("/auth")} icon="logout">
           Sign Out
         </Button>
       </View>
-      {habit.length ? (
-        habit.map((item, index) => (
+      {habitList.length ? (
+        habitList.map((item, index) => (
           <Swipeable
             containerStyle={{ marginBottom: 18 }}
             key={`${item.created_at}_${index}`}
@@ -75,7 +57,7 @@ const Index = () => {
             renderRightActions={renderRightActions}
             onSwipeableOpen={(direction) => {
               if (direction === "left") {
-                handleDeleteHabit(item.created_at);
+                handleDeleteHabit(item);
               }
               if (direction === "right") {
               }
@@ -97,10 +79,7 @@ const Index = () => {
               }}
             >
               <View className="p-5">
-                <Text
-                  className="text-[20px] font-bold mb-1"
-                  style={{ color: "#22223b" }}
-                >
+                <Text className="text-[20px] font-bold mb-1" style={{ color: "#22223b" }}>
                   {item.title}
                 </Text>
                 <Text className="text-[15px] mb-4" style={{ color: "#6c6c80" }}>
@@ -108,20 +87,13 @@ const Index = () => {
                 </Text>
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row items-center bg-[#fff3e0] rounded-l py-2 px-1">
-                    <MaterialCommunityIcons
-                      name="fire"
-                      size={18}
-                      color="#ff9800"
-                    />
+                    <MaterialCommunityIcons name="fire" size={18} color="#ff9800" />
                     <Text className="ml-2 text-[#ff9800] font-bold text-[14px]">
                       {item.streak_count} day streak
                     </Text>
                   </View>
                   <View className="bg-[#ede7f6] rounded-l py-2 px-1">
-                    <Text
-                      className="font-bold text-[14px]"
-                      style={{ color: "#7c4dff" }}
-                    >
+                    <Text className="font-bold text-[14px]" style={{ color: "#7c4dff" }}>
                       {item.frequency}
                     </Text>
                   </View>
@@ -132,9 +104,7 @@ const Index = () => {
         ))
       ) : (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-[#666666]">
-            No Habits yet. Add your first Habit!
-          </Text>
+          <Text className="text-[#666666]">No Habits yet. Add your first Habit!</Text>
         </View>
       )}
     </ScrollView>

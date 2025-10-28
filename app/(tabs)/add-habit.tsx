@@ -1,15 +1,11 @@
-import { getData, storeData } from "@/utils";
-import { HABIT_LIST } from "@/utils/constant";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View } from "react-native";
-import {
-  Button,
-  SegmentedButtons,
-  Text,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
+import { Button, SegmentedButtons, Text, TextInput, useTheme } from "react-native-paper";
+import { addHabit } from "@/store/habit/action";
+import { useDispatch } from "react-redux";
+import { uuid } from "expo-modules-core";
+import { AppDispatch } from "@/store";
 
 const FREQUENCY = ["Daily", "Weekly", "Monthly"];
 type Frequency = (typeof FREQUENCY)[number];
@@ -21,22 +17,22 @@ const AddHabit = () => {
   const [error, setError] = useState<string>("");
   const theme = useTheme();
   const route = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async () => {
     try {
-      const list = (await getData(HABIT_LIST)) || [];
-
-      await storeData(HABIT_LIST, [
-        ...list,
-        {
+      dispatch(
+        addHabit({
+          id: uuid.v4(),
           title,
           description,
           frequency,
           streak_count: 0,
           last_completed: new Date().toISOString(),
           created_at: new Date().toISOString(),
-        },
-      ]);
+        })
+      );
+
       route.back();
     } catch (error) {
       if (error instanceof Error) {
@@ -67,13 +63,10 @@ const AddHabit = () => {
             value: i,
             label: i,
           }))}
+          multiSelect={false}
         />
       </View>
-      <Button
-        mode="contained"
-        onPress={handleSubmit}
-        disabled={!title || !description}
-      >
+      <Button mode="contained" onPress={handleSubmit} disabled={!title || !description}>
         Add Habit
       </Button>
       {error && (
