@@ -4,17 +4,28 @@ import { Tabs } from "expo-router";
 export default function RootLayout() {
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
-        headerStyle: { backgroundColor: "#f5f5f5" },
-        headerShadowVisible: false,
-        tabBarStyle: {
-          backgroundColor: "#f5f5f5",
-          borderTopWidth: 0,
-          elevation: 0,
-          shadowOpacity: 0,
+        tabBarActiveTintColor: "white",
+        tabBarInactiveTintColor: "white",
+        tabBarItemStyle: {
+          width: "100%",
+          height: "100%",
+          justifyContent: "center",
+          alignItems: "center",
         },
-        tabBarActiveTintColor: "#6200ee",
-        tabBarInactiveTintColor: "#666666",
+        tabBarStyle: {
+          backgroundColor: "#333333",
+          borderRadius: 50,
+          marginHorizontal: 20,
+          marginBottom: 16,
+          paddingTop: 4,
+          height: 62,
+          position: "absolute",
+          overflow: "hidden",
+          borderWidth: 1,
+          borderColor: "transparent",
+        },
       }}
     >
       <Tabs.Screen
@@ -22,11 +33,7 @@ export default function RootLayout() {
         options={{
           title: "Today's Habits",
           tabBarIcon: ({ color, focused, size }) => (
-            <MaterialCommunityIcons
-              name="calendar-today"
-              size={size}
-              color={color}
-            />
+            <MaterialCommunityIcons name="calendar-today" size={size} color={color} />
           ),
         }}
       />
@@ -35,11 +42,7 @@ export default function RootLayout() {
         options={{
           title: "Streaks",
           tabBarIcon: ({ color, focused, size }) => (
-            <MaterialCommunityIcons
-              name="chart-line"
-              size={size}
-              color={color}
-            />
+            <MaterialCommunityIcons name="chart-line" size={size} color={color} />
           ),
         }}
       />
@@ -48,11 +51,7 @@ export default function RootLayout() {
         options={{
           title: "Add Habit",
           tabBarIcon: ({ color, focused, size }) => (
-            <MaterialCommunityIcons
-              name="plus-circle"
-              size={size}
-              color={color}
-            />
+            <MaterialCommunityIcons name="plus-circle" size={size} color={color} />
           ),
         }}
       />
