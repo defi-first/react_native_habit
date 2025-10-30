@@ -6,6 +6,7 @@ import { addHabit } from "@/store/habit/action";
 import { useDispatch } from "react-redux";
 import { uuid } from "expo-modules-core";
 import { AppDispatch } from "@/store";
+import { generateMacaronColors } from "@/utils/colors";
 
 const FREQUENCY = ["Daily", "Weekly", "Monthly"];
 type Frequency = (typeof FREQUENCY)[number];
@@ -20,6 +21,7 @@ const AddHabit = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async () => {
+    const { dark, light } = generateMacaronColors();
     try {
       dispatch(
         addHabit({
@@ -30,6 +32,8 @@ const AddHabit = () => {
           streak_count: 0,
           last_completed: new Date().toISOString(),
           created_at: new Date().toISOString(),
+          dark,
+          light,
         })
       );
 

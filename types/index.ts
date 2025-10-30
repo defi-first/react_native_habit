@@ -6,4 +6,6 @@ export interface Habit {
   streak_count: number;
   last_completed: string;
   created_at: string;
+  dark: string;
+  light: string;
 }
