@@ -8,6 +8,7 @@ import { FlatList, TouchableOpacity, TouchableWithoutFeedback, View } from "reac
 import { Swipeable } from "react-native-gesture-handler";
 import { Surface, Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import SuspensionBall from "@/components/SuspensionBall";
 
 const Index = () => {
   const { habitList } = useSelector((state: RootState) => state.habitReducer);
@@ -123,6 +124,7 @@ const Index = () => {
         ListEmptyComponent={() => ListEmptyComponent()}
         ListFooterComponent={() => <View style={{ paddingVertical: 40 }}></View>}
       />
+      <SuspensionBall bottomSafeArea={190} />
     </View>
   );
 };
