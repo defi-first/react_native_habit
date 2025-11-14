@@ -1,10 +1,10 @@
 import { AppDispatch, RootState } from "@/store";
 import { deleteHabit, getHabit } from "@/store/habit/action";
 import { Habit } from "@/types";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { ScrollView, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { Surface, Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,15 +19,20 @@ const Index = () => {
     dispatch(getHabit());
   }, []);
 
-  const renderRightActions = () => (
-    <View className="justify-center items-end flex-1 bg-[#4caf50] rounded-[18px] pr-4">
-      <MaterialCommunityIcons name="check-circle-outline" size={32} color="#fff" />
-    </View>
-  );
-
-  const renderLeftActions = () => (
-    <View className="justify-center items-start flex-1 bg-[#e53935] rounded-[18px] pl-4">
-      <MaterialCommunityIcons name="trash-can-outline" size={32} color="#fff" />
+  const renderRightActions = (item: Habit) => (
+    <View
+      className="flex-row justify-end items-center flex-1 rounded-[18px] overflow-hidden"
+      style={{ backgroundColor: item.light, opacity: 0.8 }}
+    >
+      <TouchableOpacity className="flex justify-center items-center w-16 h-full bg-[#4caf50]">
+        <MaterialCommunityIcons name="check-circle-outline" size={32} color="#fff" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        className="flex justify-center items-center w-16 h-full bg-[#e53935]"
+        onPress={() => handleDeleteHabit(item)}
+      >
+        <MaterialCommunityIcons name="trash-can-outline" size={32} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 
@@ -35,11 +40,19 @@ const Index = () => {
     dispatch(deleteHabit(item));
   };
 
+  const closeOtherSwiper = (id: string) => {
+    for (let key in swipeableRefs.current) {
+      if (key !== id) {
+        swipeableRefs.current[key]?.close();
+      }
+    }
+  };
+
   return (
     <View className="flex-1">
       <ScrollView className="flex-1 p-4" showsHorizontalScrollIndicator={false}>
         {habitList.length ? (
-          habitList.map((item, index) => (
+          habitList.map((item) => (
             <Swipeable
               containerStyle={{ marginBottom: 18 }}
               key={`${item.id}}`}
@@ -48,17 +61,14 @@ const Index = () => {
               }}
               overshootLeft={false}
               overshootRight={false}
-              renderLeftActions={renderLeftActions}
-              renderRightActions={renderRightActions}
+              renderRightActions={() => renderRightActions(item)}
               onSwipeableOpen={(direction) => {
-                if (direction === "left") {
-                  handleDeleteHabit(item);
-                }
-                if (direction === "right") {
-                }
+                // if (direction === "left") {
+                // }
+                // if (direction === "right") {
+                // }
 
-                // 移动完成之后自动复原
-                swipeableRefs.current[item.id]?.close();
+                closeOtherSwiper(item.id);
               }}
             >
               <Surface
@@ -74,27 +84,29 @@ const Index = () => {
                   elevation: 4,
                 }}
               >
-                <View className="p-5">
-                  <Text className="text-[20px] font-bold mb-1" style={{ color: "#22223b" }}>
-                    {item.title}
-                  </Text>
-                  <Text className="text-[15px] mb-4" style={{ color: "#6c6c80" }}>
-                    {item.description}
-                  </Text>
-                  <View className="flex-row justify-between items-center">
-                    <View className="flex-row items-center text-[#ccc] rounded-l py-2 px-1">
-                      <MaterialCommunityIcons name="fire" size={18} color="#ff9800" />
-                      <Text className="ml-2 text-[#ff9800] font-bold text-[14px]">
-                        {item.streak_count} day streak
-                      </Text>
-                    </View>
-                    <View className="bg-[#ede7f6] rounded-l py-2 px-1">
-                      <Text className="font-bold text-[14px]" style={{ color: "#7c4dff" }}>
-                        {item.frequency}
-                      </Text>
+                <TouchableWithoutFeedback onPress={() => closeOtherSwiper(item.id)}>
+                  <View className="p-5">
+                    <Text className="text-[20px] font-bold mb-1" style={{ color: "#22223b" }}>
+                      {item.title}
+                    </Text>
+                    <Text className="text-[15px] mb-4" style={{ color: "#6c6c80" }}>
+                      {item.description}
+                    </Text>
+                    <View className="flex-row justify-between items-center">
+                      <View className="flex-row items-center text-[#ccc] rounded-l py-2 px-1">
+                        <MaterialCommunityIcons name="fire" size={18} color="#ff9800" />
+                        <Text className="ml-2 text-[#ff9800] font-bold text-[14px]">
+                          {item.streak_count} day streak
+                        </Text>
+                      </View>
+                      <View className="bg-[#ede7f6] rounded-l py-2 px-1">
+                        <Text className="font-bold text-[14px]" style={{ color: "#7c4dff" }}>
+                          {item.frequency}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
+                </TouchableWithoutFeedback>
               </Surface>
             </Swipeable>
           ))
@@ -104,12 +116,12 @@ const Index = () => {
           </View>
         )}
       </ScrollView>
-      <TouchableOpacity
-        className="w-16 h-16 absolute right-6 bottom-6 rounded-full bg-[#2775f9] z-50 shadow-lg items-center justify-center"
-        onPress={() => route.push("/(tabs)/add-habit")}
-      >
-        <Ionicons name="pencil" color="#fff" size={24} />
-      </TouchableOpacity>
+      {/*<TouchableOpacity*/}
+      {/*  className="w-16 h-16 absolute right-6 bottom-[80px] rounded-full bg-[#2775f9] z-50 shadow-lg items-center justify-center"*/}
+      {/*  onPress={() => route.push("/(tabs)/add-habit")}*/}
+      {/*>*/}
+      {/*  <Ionicons name="pencil" color="#fff" size={24} />*/}
+      {/*</TouchableOpacity>*/}
     </View>
   );
 };
